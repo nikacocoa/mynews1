@@ -21,14 +21,15 @@ Route::get('/', function () {
 
 // NewsControllerのルート設定
 Route::controller(NewsController::class)->prefix('admin')->group(function() {
-    Route::get('news/create', 'add');
+    Route::get('news/create', 'add')->middleware('auth');
 });
 
-// ProfileControllerのルート設定
-Route::controller(ProfileController::class)->prefix('admin/profile')->group(function() {
-    Route::get('create', 'add');
-    Route::get('edit', 'edit');
+// ProfileControllerのルート設定（新しい形式で）
+Route::group(['prefix' => 'admin/profile', 'middleware' => 'auth'], function() {
+    Route::get('create', [ProfileController::class, 'add']);
+    Route::get('edit', [ProfileController::class, 'edit']);
 });
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
