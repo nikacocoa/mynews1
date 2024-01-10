@@ -12,7 +12,6 @@ class ProfileController extends Controller
     {
         return view('admin.profile.create');
     }
-
     // プロフィール編集画面を表示
     public function edit()
     {

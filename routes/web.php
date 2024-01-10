@@ -20,14 +20,18 @@ Route::get('/', function () {
 });
 
 // NewsControllerのルート設定
-Route::controller(NewsController::class)->prefix('admin')->group(function() {
-    Route::get('news/create', 'add')->middleware('auth');
+Route::controller(NewsController::class)->prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::get('news/create', 'add')->name('news.add');
+    Route::post('news/create', 'create')->name('news.create');
 });
 
-// ProfileControllerのルート設定（新しい形式で）
+// ProfileControllerのルート設定
 Route::group(['prefix' => 'admin/profile', 'middleware' => 'auth'], function() {
     Route::get('create', [ProfileController::class, 'add']);
+    Route::post('create', [ProfileController::class, 'create']);
     Route::get('edit', [ProfileController::class, 'edit']);
+    // ここにProfileControllerのupdateアクションへのPOSTメソッドのルートを追加
+    Route::post('edit', [ProfileController::class, 'update']);
 });
 
 Auth::routes();
