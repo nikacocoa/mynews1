@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,12 +29,15 @@ Route::controller(NewsController::class)->prefix('admin')->name('admin.')->middl
 // ProfileControllerのルート設定
 Route::group(['prefix' => 'admin/profile', 'middleware' => 'auth'], function() {
     Route::get('create', [ProfileController::class, 'add']);
-    Route::post('create', [ProfileController::class, 'create']);
     Route::get('edit', [ProfileController::class, 'edit']);
-    // ここにProfileControllerのupdateアクションへのPOSTメソッドのルートを追加
-    Route::post('edit', [ProfileController::class, 'update']);
+    Route::post('create', [ProfileController::class, 'create']);
+    // 以下の行はProfileControllerに対応するメソッドが必要です
+    // Route::post('create', [ProfileController::class, 'create']); // この行は削除または修正する
+    // Route::post('edit', [ProfileController::class, 'update']); // この行はProfileControllerにupdateメソッドがある場合に使用
 });
 
+// Authのルート
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// HomeControllerのルート
+Route::get('/home', [HomeController::class, 'index'])->name('home');
