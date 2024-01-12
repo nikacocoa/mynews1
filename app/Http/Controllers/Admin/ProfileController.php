@@ -17,8 +17,9 @@ class ProfileController extends Controller
     // プロフィール編集画面を表示
     public function edit($id)
     {
-        $profile = Profile::find($id); // IDに基づいてプロフィールを検索
-        return view('admin.profile.edit', compact('profile'));
+    // IDを使用してプロフィールを取得し、編集ビューに渡す
+    $profile = Profile::findOrFail($id);
+    return view('admin.profile.edit', compact('profile'));
     }
 
     // プロフィールを保存

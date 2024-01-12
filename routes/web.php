@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +17,7 @@ use App\Http\Controllers\HomeController;
 |
 */
 
+// トップページ
 Route::get('/', function () {
     return view('welcome');
 });
@@ -24,16 +26,18 @@ Route::get('/', function () {
 Route::controller(NewsController::class)->prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('news/create', 'add')->name('news.add');
     Route::post('news/create', 'create')->name('news.create');
+    Route::get('news', 'index')->name('news.index');
+    Route::get('news/edit/{id}', 'edit')->name('news.edit');
+    Route::post('news/edit/{id}', 'update')->name('news.update');
+    Route::get('news/delete/{id}', 'delete')->name('news.delete');
 });
 
 // ProfileControllerのルート設定
 Route::group(['prefix' => 'admin/profile', 'middleware' => 'auth'], function() {
     Route::get('create', [ProfileController::class, 'add']);
-    Route::get('edit', [ProfileController::class, 'edit']);
     Route::post('create', [ProfileController::class, 'create']);
-    // 以下の行はProfileControllerに対応するメソッドが必要です
-    // Route::post('create', [ProfileController::class, 'create']); // この行は削除または修正する
-    // Route::post('edit', [ProfileController::class, 'update']); // この行はProfileControllerにupdateメソッドがある場合に使用
+    Route::get('edit/{id}', [ProfileController::class, 'edit']); // プロフィール編集用ルート
+    Route::post('edit/{id}', [ProfileController::class, 'update']); // プロフィール更新用ルート
 });
 
 // Authのルート
