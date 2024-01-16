@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+
 @section('title', 'ニュースの編集')
 
 @section('content')

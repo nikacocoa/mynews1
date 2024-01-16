@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Profile; // プロフィールモデルをインポート
+use App\Http\Requests\ProfileRequest; // ProfileRequestを使用
+use App\Models\Profile; // Profileモデルを使用
 
 class ProfileController extends Controller
 {
@@ -15,46 +16,33 @@ class ProfileController extends Controller
     }
 
     // プロフィール編集画面を表示
-    public function edit($id)
+    public function edit($id) // $idパラメータを追加
     {
-    // IDを使用してプロフィールを取得し、編集ビューに渡す
-    $profile = Profile::findOrFail($id);
-    return view('admin.profile.edit', compact('profile'));
+        $profile = Profile::find($id); // IDに基づいてプロフィールを検索
+
+        if (!$profile) {
+            return abort(404); // プロフィールが見つからない場合は404エラー
+        }
+
+        return view('admin.profile.edit', compact('profile'));
     }
 
-    // プロフィールを保存
-    public function create(Request $request)
+    // プロフィールを保存する
+    public function store(ProfileRequest $request)
     {
-        // バリデーション
-        $this->validate($request, [
-            'name' => 'required',
-            'gender' => 'required',
-            'hobby' => 'nullable',
-            'introduction' => 'nullable'
-        ]);
+        // バリデーションはProfileRequestによって自動的に処理される
 
-        // データ保存
-        $profile = new Profile($request->all());
+        // バリデーションが通過した後のデータ保存処理
+        $profile = new Profile();
+        $profile->name = $request->name;
+        $profile->gender = $request->gender;
+        $profile->hobby = $request->hobby;
+        $profile->introduction = $request->introduction;
         $profile->save();
 
-        return redirect('admin/profile/create')->with('success', 'プロフィールが作成されました');
+        // 保存後のリダイレクト先など
+        return redirect('適切なリダイレクト先');
     }
 
-    // プロフィールを更新
-    public function update(Request $request, $id)
-    {
-        // バリデーション
-        $this->validate($request, [
-            'name' => 'required',
-            'gender' => 'required',
-            'hobby' => 'nullable',
-            'introduction' => 'nullable'
-        ]);
-
-        // データ更新
-        $profile = Profile::find($id);
-        $profile->update($request->all());
-
-        return redirect('admin/profile/edit/'.$id)->with('success', 'プロフィールが更新されました');
-    }
+    // 他のメソッド...
 }

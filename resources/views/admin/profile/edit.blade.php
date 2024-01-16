@@ -3,43 +3,34 @@
 @section('title', 'プロフィール編集')
 
 @section('content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-                <h2>プロフィール編集</h2>
-                <form action="{{ action('Admin\ProfileController@update', ['id' => $profile->id]) }}" method="post" enctype="multipart/form-data">
-                    @csrf
-                    @if (count($errors) > 0)
-                        <ul>
-                            @foreach ($errors->all() as $e)
-                                <li>{{ $e }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
+    <h1>プロフィール編集</h1>
 
-                    <div class="form-group">
-                        <label for="name">氏名</label>
-                        <input type="text" class="form-control" name="name" value="{{ $profile->name }}">
-                    </div>
+    <form action="{{ route('admin.profile.update', ['id' => $profile->id]) }}" method="post">
+        @csrf
 
-                    <div class="form-group">
-                        <label for="gender">性別</label>
-                        <input type="text" class="form-control" name="gender" value="{{ $profile->gender }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="hobby">趣味</label>
-                        <input type="text" class="form-control" name="hobby" value="{{ $profile->hobby }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="introduction">自己紹介欄</label>
-                        <textarea class="form-control" name="introduction" rows="5">{{ $profile->introduction }}</textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">更新</button>
-                </form>
-            </div>
+        <div class="form-group">
+            <label for="name">氏名</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ $profile->name }}" required>
         </div>
-    </div>
+
+        <div class="form-group">
+            <label for="gender">性別</label>
+            <select class="form-control" id="gender" name="gender">
+                <option value="男性" {{ $profile->gender == '男性' ? 'selected' : '' }}>男性</option>
+                <option value="女性" {{ $profile->gender == '女性' ? 'selected' : '' }}>女性</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="hobby">趣味</label>
+            <input type="text" class="form-control" id="hobby" name="hobby" value="{{ $profile->hobby }}">
+        </div>
+
+        <div class="form-group">
+            <label for="introduction">自己紹介</label>
+            <textarea class="form-control" id="introduction" name="introduction" rows="5">{{ $profile->introduction }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">更新</button>
+    </form>
 @endsection

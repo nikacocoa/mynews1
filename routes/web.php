@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\HomeController;
-use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +16,6 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-// トップページ
 Route::get('/', function () {
     return view('welcome');
 });
@@ -29,15 +27,16 @@ Route::controller(NewsController::class)->prefix('admin')->name('admin.')->middl
     Route::get('news', 'index')->name('news.index');
     Route::get('news/edit/{id}', 'edit')->name('news.edit');
     Route::post('news/edit/{id}', 'update')->name('news.update');
-    Route::get('news/delete/{id}', 'delete')->name('news.delete');
 });
 
 // ProfileControllerのルート設定
-Route::group(['prefix' => 'admin/profile', 'middleware' => 'auth'], function() {
-    Route::get('create', [ProfileController::class, 'add']);
-    Route::post('create', [ProfileController::class, 'create']);
-    Route::get('edit/{id}', [ProfileController::class, 'edit']); // プロフィール編集用ルート
-    Route::post('edit/{id}', [ProfileController::class, 'update']); // プロフィール更新用ルート
+Route::controller(ProfileController::class)->prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::get('profile/create', 'add')->name('profile.add');
+    Route::post('profile/create', 'create')->name('profile.create');
+    Route::get('profile/edit/{id}', 'edit')->name('profile.edit');
+    Route::post('profile/edit/{id}', 'update')->name('profile.update');
+    Route::get('profile/edit/{id}', 'edit')->name('profile.edit');
+    Route::get('admin/profile/edit/{id}', 'Admin\ProfileController@edit');
 });
 
 // Authのルート
