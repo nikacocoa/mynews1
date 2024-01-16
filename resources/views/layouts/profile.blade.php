@@ -30,16 +30,17 @@
         <div id="app">
             <nav class="navbar navbar-expand-md navbar-dark navbar-laravel">
                 <div class="container">
-                    <!-- [ナビゲーションバーのその他のコンテンツ] -->
+                    <!-- [existing navbar content] -->
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <!-- Left Side Of Navbar -->
                         <ul class="navbar-nav ms-auto">
-                            <!-- [左側ナビゲーションの内容、存在する場合] -->
+                            <!-- [existing left side content, if any] -->
                         </ul>
+
                         <!-- Right Side Of Navbar -->
                         <ul class="navbar-nav">
-                            <!-- 認証リンク -->
+                            <!-- Authentication Links -->
                             @guest
                                 <li><a class="nav-link" href="{{ route('login') }}">{{ __('messages.login') }}</a></li>
                             @else
@@ -65,7 +66,10 @@
                     </div>
                 </div>
             </nav>
-            <!-- [メインコンテンツ] -->
+
+            <main class="py-4">
+                @yield('content')
+            </main>
         </div>
     </body>
 </html>
