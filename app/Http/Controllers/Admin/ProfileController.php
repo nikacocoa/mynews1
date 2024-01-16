@@ -26,7 +26,25 @@ class ProfileController extends Controller
 
         return view('admin.profile.edit', compact('profile'));
     }
+    public function update(Request $request, $id)
+    {
+    // バリデーションの実施
+    $this->validate($request, [
+        'name' => 'required',
+        'gender' => 'required',
+        'hobby' => 'nullable',
+        'introduction' => 'nullable'
+    ]);
 
+    // プロフィールの取得
+    $profile = Profile::find($id);
+
+    // プロフィールの更新
+    $profile->update($request->only(['name', 'gender', 'hobby', 'introduction']));
+
+    // リダイレクト
+    return redirect()->route('admin.profile.edit', $id)->with('success', 'プロフィールを更新しました。');
+    }
     // プロフィールを保存する
     public function store(ProfileRequest $request)
     {
@@ -43,6 +61,5 @@ class ProfileController extends Controller
         // 保存後のリダイレクト先など
         return redirect('適切なリダイレクト先');
     }
-
     // 他のメソッド...
 }
