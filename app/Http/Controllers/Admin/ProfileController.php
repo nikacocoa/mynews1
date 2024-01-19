@@ -4,11 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\ProfileRequest; // ProfileRequestを使用
-use App\Models\Profile; // Profileモデルを使用
+use App\Models\Profile;
+use App\Models\ProfileHistory; // ProfileHistoryモデルをインポート
+use Illuminate\Support\Facades\Log; // エラーログのためのインポート
 
 class ProfileController extends Controller
 {
+    // プロフィールの一覧表示
+    public function index()
+    {
+        $profiles = Profile::all();
+        return view('admin.profile.index', ['profiles' => $profiles]);
+    }
+
     // プロフィール作成画面を表示
     public function add()
     {
@@ -16,50 +24,73 @@ class ProfileController extends Controller
     }
 
     // プロフィール編集画面を表示
-    public function edit($id) // $idパラメータを追加
+    public function edit($id)
     {
-        $profile = Profile::find($id); // IDに基づいてプロフィールを検索
-
-        if (!$profile) {
-            return abort(404); // プロフィールが見つからない場合は404エラー
+        $profile = Profile::find($id);
+        if (is_null($profile)) {
+            return redirect()->route('admin.profile.index')->withErrors('プロフィールが見つかりません。');
         }
-
-        return view('admin.profile.edit', compact('profile'));
+        return view('admin.profile.edit', ['profile' => $profile]);
     }
-    public function update(Request $request, $id)
+
+    // プロフィールを保存
+    public function create(Request $request)
     {
-    // バリデーションの実施
-    $this->validate($request, [
-        'name' => 'required',
-        'gender' => 'required',
-        'hobby' => 'nullable',
-        'introduction' => 'nullable'
-    ]);
+        $this->validate($request, [
+            'name' => 'required',
+            'gender' => 'required',
+            'hobby' => 'nullable',
+            'introduction' => 'nullable'
+        ]);
 
-    // プロフィールの取得
-    $profile = Profile::find($id);
-
-    // プロフィールの更新
-    $profile->update($request->only(['name', 'gender', 'hobby', 'introduction']));
-
-    // リダイレクト
-    return redirect()->route('admin.profile.edit', $id)->with('success', 'プロフィールを更新しました。');
-    }
-    // プロフィールを保存する
-    public function store(ProfileRequest $request)
-    {
-        // バリデーションはProfileRequestによって自動的に処理される
-
-        // バリデーションが通過した後のデータ保存処理
-        $profile = new Profile();
-        $profile->name = $request->name;
-        $profile->gender = $request->gender;
-        $profile->hobby = $request->hobby;
-        $profile->introduction = $request->introduction;
+        $profile = new Profile($request->only(['name', 'gender', 'hobby', 'introduction']));
         $profile->save();
 
-        // 保存後のリダイレクト先など
-        return redirect('適切なリダイレクト先');
+        return redirect('admin/profile')->with('success', 'プロフィールが作成されました');
     }
-    // 他のメソッド...
+
+    // プロフィールを更新
+    public function update(Request $request, $id)
+    {
+        $profile = Profile::find($id);
+        if (is_null($profile)) {
+            throw new NotFoundHttpException('プロフィールが見つかりません。');
+        }
+
+        $this->validate($request, [
+            'name' => 'required',
+            'gender' => 'required',
+            'hobby' => 'nullable',
+            'introduction' => 'nullable'
+        ]);
+
+        $originalProfile = $profile->getOriginal();
+        $profile->update($request->only(['name', 'gender', 'hobby', 'introduction']));
+        $updatedProfile = $profile->getAttributes();
+
+        $changes = [];
+        foreach ($updatedProfile as $key => $value) {
+            if (array_key_exists($key, $originalProfile) && $originalProfile[$key] != $value) {
+                $changes[$key] = [
+                    'old' => $originalProfile[$key],
+                    'new' => $value
+                ];
+            }
+        }
+
+        if (!empty($changes)) {
+            try {
+                ProfileHistory::create([
+                    'profile_id' => $profile->id,
+                    'changed_fields' => json_encode($changes),
+                    'created_at' => now()
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to save profile history: ' . $e->getMessage());
+            }
+        }
+
+        return redirect('admin/profile')->with('success', 'プロフィールが更新されました');
+    }
+
 }
