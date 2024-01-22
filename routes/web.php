@@ -2,8 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\NewsController;
-use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController as PublicNewsController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +19,10 @@ use App\Http\Controllers\HomeController;
 |
 */
 
+// 一般ユーザー向けのプロフィールページへのルート
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+
+// ホームページのルート
 Route::get('/', function () {
     return view('welcome');
 });
@@ -29,9 +36,9 @@ Route::controller(NewsController::class)->prefix('admin')->name('admin.')->middl
     Route::post('news/edit', 'update')->name('news.update');
 });
 
-// ProfileControllerのルート設定
-Route::controller(ProfileController::class)->prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    Route::get('profile', 'index')->name('profile.index'); // プロフィールの一覧表示用のルートを追加
+// 管理者用のProfileControllerのルート設定
+Route::controller(AdminProfileController::class)->prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::get('profile', 'index')->name('admin.profile.index');
     Route::get('profile/create', 'add')->name('profile.add');
     Route::post('profile/create', 'create')->name('profile.create');
     Route::get('profile/edit/{id}', 'edit')->name('profile.edit');
@@ -44,5 +51,5 @@ Auth::routes();
 // HomeControllerのルート
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-use App\Http\Controllers\NewsController as PublicNewsController;
+// パブリックなニュースページのルート
 Route::get('/', [PublicNewsController::class, 'index'])->name('news.index');
