@@ -43,3 +43,6 @@ Auth::routes();
 
 // HomeControllerのルート
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+use App\Http\Controllers\NewsController as PublicNewsController;
+Route::get('/', [PublicNewsController::class, 'index'])->name('news.index');

@@ -79,6 +79,7 @@ class ProfileController extends Controller
         }
 
         if (!empty($changes)) {
+            
             try {
                 ProfileHistory::create([
                     'profile_id' => $profile->id,
