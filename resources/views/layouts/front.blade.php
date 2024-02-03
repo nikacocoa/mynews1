@@ -6,14 +6,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <!-- CSRF Token -->
-         {{-- 後の章で説明します --}}
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        {{-- 各ページごとにtitleタグを入れるために@yieldで空けておきます。 --}}
         <title>@yield('title')</title>
 
         <!-- Scripts -->
-         {{-- Laravel標準で用意されているJavascriptを読み込みます --}}
         <script src="{{ secure_asset('js/app.js') }}" defer></script>
 
         <!-- Fonts -->
@@ -21,21 +18,19 @@
         <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
 
         <!-- Styles -->
-        {{-- Laravel標準で用意されているCSSを読み込みます --}}
         <link href="{{ secure_asset('css/app.css') }}" rel="stylesheet">
-        {{-- この章の後半で作成するCSSを読み込みます --}}
-        <link href="{{ secure_asset('css/front.css') }}" rel="stylesheet">
+        <link href="{{ secure_asset('css/admin.css') }}" rel="stylesheet">
     </head>
     <body>
         <div id="app">
             <nav class="navbar navbar-expand-md navbar-dark navbar-laravel">
                 <div class="container">
-                    <!-- [existing navbar content] -->
+                    <!-- Navbar Content -->
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <!-- Left Side Of Navbar -->
                         <ul class="navbar-nav ms-auto">
-                            <!-- [existing left side content, if any] -->
+                            <!-- Left Side Content -->
                         </ul>
 
                         <!-- Right Side Of Navbar -->
@@ -52,7 +47,7 @@
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                         <a class="dropdown-item" href="{{ route('logout') }}"
                                            onclick="event.preventDefault();
-                                                        document.getElementById('logout-form').submit();">
+                                                     document.getElementById('logout-form').submit();">
                                             {{ __('messages.logout') }}
                                         </a>
 
@@ -66,9 +61,40 @@
                     </div>
                 </div>
             </nav>
+
             <main class="py-4">
                 @yield('content')
+
+               
+
             </main>
         </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script>
+            $(function() {
+                $('.iine').on('click', function() {
+                    var that = $(this); // $(this)をthat変数に格納
+                    var articleId = that.data('id');
+                    $.ajax({
+                        type: 'GET',
+                        //url: ' route('add.like') ',
+                        data: { article_id: articleId, _token: '{{ csrf_token() }}' },
+                        success: function(response) {
+                            // 成功時の処理
+                            let iine_count = that.parent().find(".iine_count").text();
+                            iine_count = parseInt(iine_count) + 1;
+                            that.parent().find(".iine_count").text(iine_count.toString());
+
+                            alert('ありがとうございます！'); // アラートを追加
+                        },
+                        error: function(error) {
+                            // エラー時の処理
+                            console.log(error);
+                        }
+                    });
+                });
+            });
+        </script>
     </body>
 </html>

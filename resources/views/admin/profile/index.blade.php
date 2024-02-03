@@ -1,5 +1,3 @@
-{{-- resources/views/admin/profile/index.blade.php --}}
-
 @extends('layouts.admin')
 
 @section('title', 'プロフィール一覧')
