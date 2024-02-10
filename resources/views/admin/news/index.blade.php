@@ -48,13 +48,6 @@
                                     <img src="{{ secure_asset('storage/image/' . $post->image_path) }}">
                                 @endif
                             </div>
-                             <!-- いいねボタン -->
-                            <div>
-                                <button class="iine" data-id="{{ $post->id }}">
-                                <img src="{{ asset('images/images.png') }}">
-                                </button>
-                                <span class="iine_count">0</span>
-                            </div>
                         </div>
                     </div>
                     <hr color="#c0c0c0">
